@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify"
 import { addUser } from "../src/features/authSlice"
+import data from "../src/config/api"
 
 
 export const useAuth = () => {
@@ -13,8 +14,39 @@ export const useAuth = () => {
     const [registeredUsers, setRegisteredUsers] = useState(JSON.parse(localStorage.getItem("registeredUsers")) || [])
     const dispatch = useDispatch()
 
-    // console.log(registeredUsers);
-    
+    const [productsData, setProductsData] = useState([])
+    const [category, setCategory] = useState("all")
+
+    const [filterData, setFilterData] = useState("")
+    const [isLoading, setIsLoading] = useState(true)
+
+    const getProducts = async () => {
+
+    try {
+            const products = await data.get("/products")
+            setProductsData(products)
+            setIsLoading(false)
+
+        } catch (error) {
+            console.log(error.message)
+        }
+
+    }
+
+    useEffect(() => {
+        getProducts()
+    }, [])
+
+
+    let categoryData = productsData.filter((elem) => {
+        if (category === "all") return productsData
+        return elem.category === category
+    })
+    .filter((fil) => {
+        if (fil.title === undefined) return productsData
+        return fil.title.toLowerCase().includes(filterData)
+    })
+
     
     
     const registerForm = (data) => {
@@ -47,7 +79,11 @@ export const useAuth = () => {
        reset,
        registerForm,
        loginForm,
-       navigate
+       navigate,
+       setCategory,
+       setFilterData,
+       categoryData,
+       isLoading
     }
 
     

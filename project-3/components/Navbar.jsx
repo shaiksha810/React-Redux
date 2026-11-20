@@ -4,6 +4,9 @@ import { ShoppingBag, Menu, LogOut } from 'lucide-react'
 
 const Navbar = () => {
 
+    const handleLogout = () => {
+        localStorage.removeItem("loggedInUser")
+    }
 
   return (
     <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">

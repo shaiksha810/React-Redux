@@ -1,7 +1,7 @@
 import ProductCard from '../../components/ProductCard'
 import { Search } from 'lucide-react'
 import ProductSkeleton from '../../components/ProductSkeleton'
-import useAuth from '../hooks/useAuth'
+import { useAuth } from '../../hooks/useAuth'
 
 
 const ShopPage = () => {
