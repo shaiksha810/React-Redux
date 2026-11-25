@@ -1,23 +1,14 @@
-import { useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router'
-import Navbar from '../../components/Navbar'
+import React from 'react'
+import { Outlet } from 'react-router'
+import Navbar from '../components/Navbar'
 
-const Mainlayout = () => {
-  
-   let loggedInUser = useSelector((store) => store.auth)
-   let user = loggedInUser.user
-   
-
-   if(!user){
-    return <Navigate to={"/"}/>
-   }
-
+const MainLayout = () => {
   return (
     <div>
-      <Navbar />
-      <Outlet />
+        <Navbar />
+        <Outlet />
     </div>
-)
+  )
 }
 
-export default Mainlayout
+export default MainLayout

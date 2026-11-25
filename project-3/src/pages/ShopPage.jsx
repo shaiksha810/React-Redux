@@ -1,70 +1,64 @@
-import ProductCard from '../../components/ProductCard'
-import { Search } from 'lucide-react'
-import ProductSkeleton from '../../components/ProductSkeleton'
-import { useAuth } from '../../hooks/useAuth'
 
+import React from 'react'
+import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
 
 const ShopPage = () => {
 
-    const { categoryData, isLoading, setCategory, setFilterData} = useAuth()         
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["products"],
 
-        return (
-            <div className="min-h-screen bg-gray-50 p-6">
-                {/* Search & Category Section */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        queryFn: async () => {
+            const res = await axios.get(
+                "https://dummyjson.com/products"
+            )
 
-                    {/* Search Bar */}
-                    <div className="relative w-full sm:flex-1">
-                        <input
-                            type="text"
-                            placeholder="Search products..."
-                            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder:text-gray-400"
-                            onChange={(e) => setFilterData(e.target.value)}
-                        />
+            return res.data
+        }
+    })
 
-                        <Search
-                            size={20}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                        />
-                    </div>
+    console.log(data);
+    
 
-                    {/* Category Dropdown */}
-                    <div className="w-full sm:w-56">
-                        <select
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition cursor-pointer"
-                            defaultValue=""
-                            onClick={(e) => setCategory(e.target.value)}
-                        >
-                            <option value="all">All Categories</option>
-                            <option value="men's clothing">Men's Clothing</option>
-                            <option value="women's clothing">Women's Clothing</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="jewelery">Jewelry</option>
-                        </select>
-                    </div>
+    if (isLoading) return <h1>Loading...</h1>
 
-                </div>
+    if (error) return <p>Error: {error.message}</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    return (
+        // <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
 
-                    {isLoading ? (
+        //     {data.products.map((product) => (
 
-                        Array.from({ length: 8 }).map((_, index) => (
-                            <ProductSkeleton key={index} />
-                        ))
+        //         <div
+        //             key={product.id}
+        //             className="border rounded-xl p-4 shadow-sm"
+        //         >
+        //             <img
+        //                 src={product.thumbnail}
+        //                 alt={product.title}
+        //                 className="w-full h-48 object-contain"
+        //             />
 
-                    ) : (
+        //             <h2 className="font-semibold mt-3">
+        //                 {product.title}
+        //             </h2>
 
-                        categoryData.map((elem) => (
-                            <ProductCard key={elem.id} product={elem} />
-                        ))
+        //             <p className="text-gray-600">
+        //                 ${product.price}
+        //             </p>
 
-                    )}
+        //             <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg mt-3">
+        //                 Add to Cart
+        //             </button>
 
-                </div>
+        //         </div>
 
-            </div>
-        )
-    }
+        //     ))}
 
-    export default ShopPage
+        // </div>
+
+        <h1>shop</h1>
+    )
+}
+
+export default ShopPage

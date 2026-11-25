@@ -1,100 +1,138 @@
-import { useAuth } from "../../hooks/useAuth"
+import axios from 'axios'
+import { UserRound, LockKeyhole, ShoppingBag } from 'lucide-react'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { NavLink } from 'react-router'
+import { addUser } from '../features/authSlice'
+import useApi from '../apis/useApi'
 
 const LoginPage = () => {
 
-  const {loginForm, handleSubmit, register, errors, navigate} = useAuth()
+    const dispatch = useDispatch()
+    const api = useApi()
+
+    const [loginUser, setLoginUser] = useState({
+        username: '',
+        password: ''
+    })
+
+    const handleChange = (e) => {
+        const { name, value } = e.target
+
+        setLoginUser((prevUser) => ({
+            ...prevUser,
+            [name]: value
+        }))
+    }
 
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
+    const handleSubmit = async(e) => {
+        e.preventDefault()
 
-      {/* Login Card */}
-      <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-100">
+        try {
+            const res = await api.post("/login", loginUser)
+            dispatch(addUser(res.data))
+            localStorage.setItem("accessToken", res.data.accessToken)
+        } catch (error) {
+            console.log(error.message)
+        }
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-indigo-600 text-white rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl font-bold">L</span>
-          </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome Back
-          </h1>
+        setLoginUser({
+            username: "",
+            password: ""
+        })
+    }
 
-          <p className="text-gray-500 mt-2 text-sm">
-            Please enter your details to sign in.
-          </p>
-        </div>
 
-        {/* Login Form */}
-        <form
-        onSubmit={handleSubmit(loginForm)}
-         className="space-y-5">
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 sm:p-10">
 
-          {/* Email Field */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Email Address
-            </label>
+                {/* Logo */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="bg-indigo-600 p-3 rounded-xl mb-4">
+                        <ShoppingBag className="w-8 h-8 text-white" />
+                    </div>
 
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-gray-400"
-            {...register("email", {required:"Email is required"})}
-            />
-            {errors.email && <p className='text-red-500'>{errors.email.message}</p>}
-          </div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        Welcome Back
+                    </h1>
 
-          {/* Password Field */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
+                    <p className="text-gray-500 mt-2 text-sm">
+                        Login to continue shopping
+                    </p>
+                </div>
+
+                {/* Login Form */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-5">
+
+                    {/* Name Field */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Name
+                        </label>
+
+                        <div className="relative">
+                            <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+                            <input
+                                type="text"
+                                placeholder="Enter your name"
+                                value={loginUser.username}
+                                name='username'
+                                onChange={handleChange}
+                                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Password Field */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+
+                        <div className="relative">
+                            <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+                            <input
+                                type='password'
+                                name='password'
+                                placeholder="Enter your password"
+                                value={loginUser.password}
+                                onChange={handleChange}
+                                className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Login Button */}
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md shadow-indigo-100"
+                    >
+                        Login
+                    </button>
+
+                </form>
+
+                {/* Register Link */}
+                <p className="text-center text-sm text-gray-500 mt-7">
+                    Don't have an account?{' '}
+                    <NavLink
+                        to="/register"
+                        className="text-indigo-600 font-semibold hover:text-indigo-700"
+                    >
+                        Create Account
+                    </NavLink>
+                </p>
+
             </div>
-
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-gray-400"
-              {...register("password", {required:"password is required"})}
-              />
-              {errors.password && <p className='text-red-500'>{errors.password.message}</p>}
-          </div>
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md shadow-indigo-100"
-          >
-            Sign In
-          </button>
-
-        </form>
-
-        {/* Register Link */}
-        <p className="text-center text-sm text-gray-500 mt-7">
-          Don't have an account?{' '}
-          <button
-            onClick={() => navigate("/register")}
-            className="cursor-pointer text-indigo-600 font-semibold hover:text-indigo-700"
-          >
-            Create an account
-          </button>
-        </p>
-
-      </div>
-    </div>
-  )
+        </div>
+    )
 }
 
 export default LoginPage
